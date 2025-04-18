@@ -1,15 +1,14 @@
 -- tests/run_cov.lua
-pcall(require, "luarocks.loader") -- add LuaRocks 5.1 paths
-require("luacov") -- start coverage tracer
+pcall(require, "luarocks.loader") -- LuaRocks paths (5.1)
 
+require("luacov.runner")() -- ← starts the tracer immediately
+
+-- run all specs (old or new Plenary API)
 local harness = require("plenary.test_harness")
-
 if type(harness.run) == "function" then
-	harness.run() -- old API
-elseif type(harness.test_directory) == "function" then
-	harness.test_directory("tests", {}) -- new API
+	harness.run()
 else
-	error("Unknown plenary.test_harness API")
+	harness.test_directory("tests", {})
 end
 
-vim.cmd("q") -- quit Neovim headless
+vim.cmd("q") -- quit headless nvim
