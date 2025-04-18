@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci-dev]
   pull_request:
     branches: [main]
 
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        neovim: ["stable", "v0.9.5", "nightly"]
+        neovim: ["stable", "v0.10.0", "nightly"]
 
     steps:
       - name: Checkout plugin
@@ -20,21 +20,30 @@ jobs:
 
       - name: Install Neovim ${{ matrix.neovim }}
         run: |
+          set -euo pipefail
+
           VERSION=${{ matrix.neovim }}
-          if [ "$VERSION" = "nightly" ]; then
-            URL=https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-x86_64.tar.gz
-          elif [ "$VERSION" = "stable" ]; then
-            URL=https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+
+          # All historic 0.x tags use nvim-linux64.tar.gz, everything newer uses -x86_64
+          if [[ "$VERSION" =~ ^v0\.[0-9]+\. ]]; then
+            FILENAME=nvim-linux64.tar.gz
           else
-            URL=https://github.com/neovim/neovim/releases/download/${VERSION}/nvim-linux-x86_64.tar.gz
+            FILENAME=nvim-linux-x86_64.tar.gz
           fi
 
-          curl -LO $URL
-          tar xzf nvim-linux-x86_64.tar.gz
-          sudo mv nvim-linux64 /opt/nvim
-          echo "/opt/nvim/bin" >> $GITHUB_PATH
+          URL="https://github.com/neovim/neovim/releases/download/${VERSION}/${FILENAME}"
+          echo "Downloading $URL"
 
-      - name: Verify Neovim version
+          curl -fL -o nvim.tar.gz "$URL"        # -f = fail on 4xx/5xx, -L = follow redirects
+
+          mkdir nvim-extract
+          tar -xzf nvim.tar.gz -C nvim-extract
+
+          DIR="$(ls nvim-extract | head -n1)"   # should be nvim-linux64 or nvim-linux-x86_64
+          sudo mv "nvim-extract/$DIR" /opt/nvim
+          echo "/opt/nvim/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Neovim
         run: nvim --version
 
       - name: Install Plenary
@@ -42,10 +51,13 @@ jobs:
           mkdir -p ~/.local/share/nvim/site/pack/test/start
           git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/test/start/plenary.nvim
 
-      - name: Install Lua + Luacheck
+      - name: Install LuaRocks + luacheck
         run: |
-          sudo apt-get install lua5.4 luarocks -y
-          luarocks install luacheck
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 liblua5.1-0-dev luarocks
+          luarocks --local install luacheck            # installs into ~/.luarocks
+          echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
 
       - name: Lint plugin
         run: luacheck lua/
