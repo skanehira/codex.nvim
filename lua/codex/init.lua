@@ -23,20 +23,33 @@ function M.setup(user_config)
   end
 end
 
+-- Create a floating window displaying the codex buffer
 local function open_window()
-  local buf = state.buf
+  -- compute dimensions and position
   local width = math.floor(vim.o.columns * config.width)
   local height = math.floor(vim.o.lines * config.height)
   local row = math.floor((vim.o.lines - height) / 2)
   local col = math.floor((vim.o.columns - width) / 2)
-  state.win = vim.api.nvim_open_win(buf, true, {
+  -- resolve border style (string or table)
+  local border = config.border
+  if type(border) == 'string' then
+    local styles = {
+      single = { {'╭','FloatBorder'},{'─','FloatBorder'},{'╮','FloatBorder'},{'│','FloatBorder'},{'╯','FloatBorder'},{'─','FloatBorder'},{'╰','FloatBorder'},{'│','FloatBorder'} },
+      double = { {'╔','FloatBorder'},{'═','FloatBorder'},{'╗','FloatBorder'},{'║','FloatBorder'},{'╝','FloatBorder'},{'═','FloatBorder'},{'╚','FloatBorder'},{'║','FloatBorder'} },
+      rounded = { {'╭','FloatBorder'},{'─','FloatBorder'},{'╮','FloatBorder'},{'│','FloatBorder'},{'╯','FloatBorder'},{'─','FloatBorder'},{'╰','FloatBorder'},{'│','FloatBorder'} },
+      none = nil,
+    }
+    border = styles[border] or styles.single
+  end
+  -- open floating window
+  state.win = vim.api.nvim_open_win(state.buf, true, {
     relative = 'editor',
     width = width,
     height = height,
     row = row,
     col = col,
     style = 'minimal',
-    border = config.border,
+    border = border,
   })
 end
 
