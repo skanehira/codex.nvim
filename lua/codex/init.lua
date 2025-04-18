@@ -8,6 +8,8 @@ local config = {
   width = 0.8,
   height = 0.8,
   cmd = 'codex',
+  -- whether to auto-install the codex CLI if not found (requires npm)
+  autoinstall = false,
 }
 
 local state = {
