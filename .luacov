@@ -1,0 +1,3 @@
+[luacov]
+statsfile = luacov.stats.out
+reportfile = luacov.report.out

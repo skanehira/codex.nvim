@@ -1,6 +1,7 @@
 # Codex Neovim Plugin
 
 A Neovim plugin integrating the open-sourced Codex CLI (`codex`).
+> Latest version: ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/johnseth97/codex.nvim?sort=semver)
 
 Features:
 - ✅ Toggle Codex floating window with `:CodexToggle`

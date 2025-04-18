@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Neovim ${{ matrix.neovim }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim: ["stable", "v0.9.5", "nightly"]
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Install Neovim ${{ matrix.neovim }}
+        run: |
+          curl -LO https://github.com/neovim/neovim/releases/download/${{ matrix.neovim }}/nvim-linux64.tar.gz
+          tar xzf nvim-linux64.tar.gz
+          sudo mv nvim-linux64 /opt/nvim
+          echo "/opt/nvim/bin" >> $GITHUB_PATH
+
+      - name: Verify Neovim version
+        run: nvim --version
+
+      - name: Install Plenary
+        run: |
+          mkdir -p ~/.local/share/nvim/site/pack/test/start
+          git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/test/start/plenary.nvim
+
+      - name: Install Lua + Luacheck
+        run: |
+          sudo apt-get install lua5.4 luarocks -y
+          luarocks install luacheck
+
+      - name: Lint plugin
+        run: luacheck lua/
+      - name: Run tests
+        run: nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests"
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage-final.json
+          token: ${{ secrets.CODECOV_TOKEN }} # Add to repo secrets
