@@ -1,14 +1,17 @@
 -- tests/run_cov.lua
 pcall(require, "luarocks.loader") -- LuaRocks paths (5.1)
 
-require("luacov.runner")() -- ← starts the tracer immediately
+local luacov_runner = require("luacov.runner")
+luacov_runner.init() -- begin tracing *now*
 
--- run all specs (old or new Plenary API)
+-- ── run all specs ───────────────────────────────────────────
 local harness = require("plenary.test_harness")
 if type(harness.run) == "function" then
-	harness.run()
+	harness.run() -- older Plenary
 else
-	harness.test_directory("tests", {})
+	harness.test_directory("tests", {}) -- newer Plenary
 end
+-- ────────────────────────────────────────────────────────────
 
-vim.cmd("q") -- quit headless nvim
+luacov_runner.shutdown() -- flush luacov.stats.out
+vim.cmd("q") -- quit Neovim
