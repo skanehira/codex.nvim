@@ -1,23 +1,20 @@
 -- tests/run_cov.lua
-pcall(require, "luarocks.loader")
+pcall(require, "luarocks.loader") -- add ~/.luarocks/**/5.1 to package.path
 
-local root = vim.fn.getcwd() -- repo root from shell
-local luacov_runner = require("luacov.runner")
-
-luacov_runner.init({
-	statsfile = root .. "/luacov.stats.out",
-	reportfile = root .. "/luacov.report.out",
+local runner = require("luacov.runner")
+runner("start", {
+	statsfile = "luacov.stats.out",
+	reportfile = "luacov.report.out",
 })
 
--- ── run specs ────────────────────────────────
+-- ── run all specs ───────────────────────────────────────────
 local harness = require("plenary.test_harness")
 if type(harness.run) == "function" then
-	harness.run()
+	harness.run() -- older Plenary
 else
-	harness.test_directory("tests", {})
+	harness.test_directory("tests", {}) -- newer Plenary
 end
--- ─────────────────────────────────────────────
+-- ────────────────────────────────────────────────────────────
 
-luacov_runner.shutdown() -- flush file
-print(">> LuaCov stats at: " .. root .. "/luacov.stats.out")
+runner("stop") -- write luacov.stats.out
 vim.cmd("q")
