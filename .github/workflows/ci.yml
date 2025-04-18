@@ -67,6 +67,7 @@ jobs:
           nvim --headless -u tests/minimal_init.lua -c "luafile tests/run_cov.lua"
           echo "::group::Coverage"
           ls -l luacov.stats.out || { echo "stats file missing"; exit 1; }
+          find . -maxdepth 3 -name "luacov.stats.out"
           luacov -t LcovReporter
           echo "::endgroup::"
 
