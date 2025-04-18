@@ -17,7 +17,13 @@ local state = {
 
 function M.setup(user_config)
   config = vim.tbl_deep_extend('force', config, user_config or {})
-  vim.api.nvim_create_user_command('CodexToggle', function() M.toggle() end, {})
+  -- define the :CodexToggle command (with fallback for older Neovim)
+  if vim.api.nvim_create_user_command then
+    vim.api.nvim_create_user_command('CodexToggle', function() M.toggle() end, { desc = 'Toggle Codex popup' })
+  else
+    vim.cmd('command! CodexToggle lua require("codex").toggle()')
+  end
+  -- set mapping for toggle if provided
   if config.keymaps.toggle then
     vim.api.nvim_set_keymap('n', config.keymaps.toggle, '<cmd>CodexToggle<CR>', { noremap = true, silent = true })
   end
