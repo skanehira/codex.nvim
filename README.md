@@ -3,10 +3,10 @@
 A Neovim plugin integrating the open-sourced Codex CLI (`codex`).
 
 Features:
-- Toggle Codex floating window with `:CodexToggle`
-- Optional keymap mapping via `setup` call
-- Background running when window hidden
-- Statusline integration via `require('codex').statusline()`
+- ✅ Toggle Codex floating window with `:CodexToggle`
+- ✅ Optional keymap mapping via `setup` call
+- ✅ Background running when window hidden
+- ⚠️ Statusline integration via `require('codex').statusline()` (not yet implemented)
 
 Installation:
 Use your plugin manager, e.g., with packer.nvim:
