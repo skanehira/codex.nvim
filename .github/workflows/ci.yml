@@ -66,7 +66,8 @@ jobs:
           eval "$(luarocks --lua-version=5.1 path --bin)"
           nvim --headless -u tests/minimal_init.lua -c "luafile tests/run_cov.lua"
           ls -l luacov.stats.out           # debug: show file exists
-          luacov -t LcovReporter           # generates lcov.info
+          luacov -t LcovReporter > lcov.info # generates lcov.info
+          ls -l lcov.info               # debug: show file exists
 
       - name: Upload code coverage
         uses: codecov/codecov-action@v4
