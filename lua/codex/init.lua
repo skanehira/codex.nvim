@@ -7,6 +7,7 @@ local config = {
   border = 'single',
   width = 0.8,
   height = 0.8,
+  cmd = 'codex',
 }
 
 local state = {
@@ -75,7 +76,7 @@ function M.open()
   open_window()
   if not state.job then
     -- spawn the Codex CLI in the floating terminal buffer
-    state.job = vim.fn.termopen('codex', {
+    state.job = vim.fn.termopen(config.cmd, {
       cwd = vim.loop.cwd(),
       on_exit = function()
         state.job = nil
