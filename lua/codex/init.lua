@@ -71,7 +71,7 @@ function M.open()
   end
   open_window()
   if not state.job then
-    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {})
+    -- spawn the Codex CLI in the floating terminal buffer
     state.job = vim.fn.termopen('codex', {
       cwd = vim.loop.cwd(),
       on_exit = function()
