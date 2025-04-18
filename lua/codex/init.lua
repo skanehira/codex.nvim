@@ -68,6 +68,9 @@ function M.open()
     vim.api.nvim_buf_set_option(state.buf, 'bufhidden', 'hide')
     vim.api.nvim_buf_set_option(state.buf, 'swapfile', false)
     vim.api.nvim_buf_set_option(state.buf, 'filetype', 'codex')
+    -- map <Esc> in terminal and normal modes to close the Codex window
+    vim.api.nvim_buf_set_keymap(state.buf, 't', '<Esc>', [[<C-\><C-n><cmd>lua require('codex').close()<CR>]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(state.buf, 'n', '<Esc>', [[<cmd>lua require('codex').close()<CR>]], { noremap = true, silent = true })
   end
   open_window()
   if not state.job then

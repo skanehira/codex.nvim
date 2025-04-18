@@ -17,8 +17,32 @@ use {
     require('codex').setup {
       keymaps = { toggle = '<leader>cc' },
       border = 'double',
-      width = 0.7,
-      height = 0.7,
+      width = 0.8,
+      height = 0.8,
+    }
+  end,
+}
+```
+For lazy.nvim:
+```lua
+return {
+  'johnseth97/codex.nvim',
+  lazy = true,
+  keys = {
+    {
+      '<leader>cc',
+      function()
+        require('codex').toggle()
+      end,
+      desc = 'Toggle Codex popup',
+    },
+  },
+  config = function()
+    require('codex').setup {
+      keymaps = {}, -- <-- disable internal mapping
+      border = 'rounded',
+      width = 0.8,
+      height = 0.8,
     }
   end,
 }
