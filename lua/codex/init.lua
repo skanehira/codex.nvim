@@ -17,13 +17,10 @@ local state = {
 
 function M.setup(user_config)
   config = vim.tbl_deep_extend('force', config, user_config or {})
-  -- define the :CodexToggle command (with fallback for older Neovim)
-  if vim.api.nvim_create_user_command then
-    vim.api.nvim_create_user_command('CodexToggle', function() M.toggle() end, { desc = 'Toggle Codex popup' })
-  else
-    vim.cmd('command! CodexToggle lua require("codex").toggle()')
-  end
-  -- set mapping for toggle if provided
+  -- define commands for toggling the Codex popup
+  vim.api.nvim_create_user_command('Codex', function() M.toggle() end, { desc = 'Toggle Codex popup' })
+  vim.api.nvim_create_user_command('CodexToggle', function() M.toggle() end, { desc = 'Toggle Codex popup (alias)' })
+  -- optional keymap for toggle
   if config.keymaps.toggle then
     vim.api.nvim_set_keymap('n', config.keymaps.toggle, '<cmd>CodexToggle<CR>', { noremap = true, silent = true })
   end
@@ -65,9 +62,9 @@ function M.open()
     return
   end
   if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
-    state.buf = vim.api.nvim_create_buf(false, true)
-    -- terminal buffer settings
-    vim.api.nvim_buf_set_option(state.buf, 'buftype', 'terminal')
+    -- create an unlisted scratch buffer for the terminal
+    state.buf = vim.api.nvim_create_buf(false, false)
+    -- buffer options
     vim.api.nvim_buf_set_option(state.buf, 'bufhidden', 'hide')
     vim.api.nvim_buf_set_option(state.buf, 'swapfile', false)
     vim.api.nvim_buf_set_option(state.buf, 'filetype', 'codex')
