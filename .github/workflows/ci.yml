@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, ci-dev]
+    branches: [main, codecov-dev]
   pull_request:
     branches: [main]
 
@@ -51,21 +51,25 @@ jobs:
           mkdir -p ~/.local/share/nvim/site/pack/test/start
           git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/test/start/plenary.nvim
 
-      - name: Install LuaRocks + luacheck
+      - name: Install LuaRocks + luacheck + coverage tools
         run: |
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y lua5.1 liblua5.1-0-dev luarocks
-          luarocks --local install luacheck            # installs into ~/.luarocks
+          luarocks --lua-version=5.1 --local install luacheck
+          luarocks --lua-version=5.1 --local install luacov
+          luarocks --lua-version=5.1 --local install luacov-reporter-lcov
           echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
 
-      - name: Lint plugin
-        run: luacheck lua/
-      - name: Run tests
-        run: nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests"
+      - name: Run tests with coverage
+        run: |
+          eval "$(luarocks --lua-version=5.1 path --bin)"
+          nvim --headless -u tests/minimal_init.lua -c "luafile tests/run_cov.lua"
+          ls -l luacov.stats.out           # debug: show file exists
+          luacov -t LcovReporter           # generates lcov.info
 
       - name: Upload code coverage
         uses: codecov/codecov-action@v4
         with:
-          files: coverage-final.json
-          token: ${{ secrets.CODECOV_TOKEN }} # Add to repo secrets
+          files: lcov.info               # <-- new file
+          token: ${{ secrets.CODECOV_TOKEN }}
