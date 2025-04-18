@@ -10,28 +10,29 @@ Features:
 - ⚠️ Statusline integration via `require('codex').statusline()` (not yet implemented)
 
 Installation:
-Use your plugin manager, e.g., with packer.nvim:
-```lua
-use {
-  'johnseth97/codex.nvim',
-  config = function()
-    require('codex').setup {
-      keymaps = { toggle = '<leader>cc' },
-      border = 'double',
-      width = 0.8,
-      height = 0.8,
-    }
-  end,
-}
+
+- Install the `codex` CLI via npm, or mark autoinstall as true in the config function
+
+```bash
+npm install -g @openai/codex
 ```
-For lazy.nvim:
+
+- Grab an API key from OpenAI and set it in your environment variables:
+  - Note: You can also set it in your `~/.bashrc` or `~/.zshrc` file to persist across sessions, but be careful with security. Especially if you share your config files.
+
+```bash
+export OPENAI_API_KEY=your_api_key
+```
+
+- Use your plugin manager, e.g. lazy.nvim:
+
 ```lua
 return {
   'johnseth97/codex.nvim',
   lazy = true,
   keys = {
     {
-      '<leader>cc',
+      '<leader>cc', -- Or any other keybinding
       function()
         require('codex').toggle()
       end,
