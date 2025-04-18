@@ -60,7 +60,10 @@ function M.open()
   end
   if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
     state.buf = vim.api.nvim_create_buf(false, true)
+    -- terminal buffer settings
+    vim.api.nvim_buf_set_option(state.buf, 'buftype', 'terminal')
     vim.api.nvim_buf_set_option(state.buf, 'bufhidden', 'hide')
+    vim.api.nvim_buf_set_option(state.buf, 'swapfile', false)
     vim.api.nvim_buf_set_option(state.buf, 'filetype', 'codex')
   end
   open_window()
