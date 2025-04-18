@@ -1,20 +1,21 @@
--- tests/run_cov.lua
-pcall(require, "luarocks.loader") -- add ~/.luarocks/**/5.1 to package.path
+-- Instrument LuaRocks paths (5.1)
+pcall(require, "luarocks.loader")
 
+-- Start LuaCov
 local runner = require("luacov.runner")
-runner("start", {
+runner.init({ -- you can add statsfile/reportfile here if desired
 	statsfile = "luacov.stats.out",
 	reportfile = "luacov.report.out",
 })
 
--- ── run all specs ───────────────────────────────────────────
+-- ── Run all specs ───────────────────────────────────────────
 local harness = require("plenary.test_harness")
 if type(harness.run) == "function" then
-	harness.run() -- older Plenary
+	harness.run() -- Plenary ≤ 2023‑11
 else
-	harness.test_directory("tests", {}) -- newer Plenary
+	harness.test_directory("tests", {}) -- Plenary ≥ 2023‑12
 end
 -- ────────────────────────────────────────────────────────────
 
-runner("stop") -- write luacov.stats.out
-vim.cmd("q")
+runner.shutdown() -- force flush of luacov.stats.out
+vim.cmd("q") -- quit Neovim
