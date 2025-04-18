@@ -20,6 +20,23 @@ local state = {
 
 function M.setup(user_config)
   config = vim.tbl_deep_extend('force', config, user_config or {})
+  -- auto-install codex CLI if requested and not already available
+  if config.autoinstall and vim.fn.executable(config.cmd) == 0 then
+    if vim.fn.executable('npm') == 1 then
+      vim.notify('[codex.nvim] installing codex CLI via npm...', vim.log.levels.INFO)
+      vim.fn.jobstart({'npm', 'install', '-g', '@openai/codex'}, {
+        on_exit = function(_, exit_code)
+          if exit_code == 0 then
+            vim.notify('[codex.nvim] codex CLI installed successfully', vim.log.levels.INFO)
+          else
+            vim.notify('[codex.nvim] failed to install codex CLI', vim.log.levels.ERROR)
+          end
+        end,
+      })
+    else
+      vim.notify('[codex.nvim] npm not found; cannot auto-install codex CLI', vim.log.levels.ERROR)
+    end
+  end
   -- define commands for toggling the Codex popup
   vim.api.nvim_create_user_command('Codex', function() M.toggle() end, { desc = 'Toggle Codex popup' })
   vim.api.nvim_create_user_command('CodexToggle', function() M.toggle() end, { desc = 'Toggle Codex popup (alias)' })

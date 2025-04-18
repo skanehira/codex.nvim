@@ -45,7 +45,8 @@ return {
       border = 'rounded',
       width = 0.8,
       height = 0.8,
-    }
+    },
+    autoinstall = true, -- <-- set to true to install codex automatically
   end,
 }
 ```
