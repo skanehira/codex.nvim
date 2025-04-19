@@ -30,7 +30,6 @@ export OPENAI_API_KEY=your_api_key
 ```lua
 return {
   'johnseth97/codex.nvim',
-  branch = 'patch-2',
   lazy = true,
   keys = {
     {
