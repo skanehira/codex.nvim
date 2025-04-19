@@ -7,7 +7,7 @@ Features:
 - ✅ Toggle Codex floating window with `:CodexToggle`
 - ✅ Optional keymap mapping via `setup` call
 - ✅ Background running when window hidden
-- ⚠️ Statusline integration via `require('codex').statusline()` (not yet implemented)
+- ✅ Statusline integration via `require('codex').statusline()` (not yet implemented)
 
 Installation:
 
