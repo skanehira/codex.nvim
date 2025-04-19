@@ -1,15 +1,16 @@
 # Codex Neovim Plugin
+<img width="1480" alt="image" src="https://github.com/user-attachments/assets/eac126c5-e71c-4de9-817a-bf4e8f2f6af9" />
 
-A Neovim plugin integrating the open-sourced Codex CLI (`codex`).
+## A Neovim plugin integrating the open-sourced Codex CLI (`codex`).
 > Latest version: ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/johnseth97/codex.nvim?sort=semver)
 
-Features:
+### Features:
 - ✅ Toggle Codex floating window with `:CodexToggle`
 - ✅ Optional keymap mapping via `setup` call
 - ✅ Background running when window hidden
 - ✅ Statusline integration via `require('codex').status()` 
 
-Installation:
+### Installation:
 
 - Install the `codex` CLI via npm, or mark autoinstall as true in the config function
 
@@ -48,10 +49,10 @@ return {
 }
 ```
 
-Usage:
+### Usage:
 - Call `:Codex` (or `:CodexToggle`) to open or close the Codex popup.
 -- Map your own keybindings via the `keymaps.toggle` setting.
-- Add lualinenotifier to show backgrounded Codex window:
+- Add the following code to show backgrounded Codex window in lualine:
 ```lua
 require('codex').status() -- drop in to your lualine sections
 ```
