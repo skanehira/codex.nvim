@@ -29,32 +29,29 @@ export OPENAI_API_KEY=your_api_key
 ```lua
 return {
   'johnseth97/codex.nvim',
+  branch = 'patch-2',
   lazy = true,
   keys = {
     {
       '<leader>cc',
-      function()
-        require('codex').toggle()
-      end,
+      function() require('codex').toggle() end,
       desc = 'Toggle Codex popup',
     },
   },
-  config = function()
-    require('codex').setup {
-      keymaps = {}, -- <-- disable internal mapping
-      border = 'rounded',
-      width = 0.8,
-      height = 0.8,
-      autoinstall = true,
-    }
-  end,
+  opts = {
+    keymaps     = {},    -- disable internal mapping
+    border      = 'rounded', -- or 'double'
+    width       = 0.8,
+    height      = 0.8,
+    autoinstall = true,
+  },
 }
 ```
 
 Usage:
 - Call `:Codex` (or `:CodexToggle`) to open or close the Codex popup.
 -- Map your own keybindings via the `keymaps.toggle` setting.
-- Add to your statusline:
-```vim
-set statusline+=%{v:lua.require'codex'.statusline()}
+- Add lualinenotifier to show backgrounded Codex window:
+```lua
+require('codex').status() -- drop in to your lualine sections
 ```
