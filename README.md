@@ -4,6 +4,8 @@
 ## A Neovim plugin integrating the open-sourced Codex CLI (`codex`).
 > Latest version: ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/johnseth97/codex.nvim?sort=semver)
 
+Note: As of v1.0.0, <Esc> no longer closes the Codex window. Press q to close, and <Esc><Esc> to safely interrupt model generation without resetting context.
+
 ### Features:
 - ✅ Toggle Codex floating window with `:CodexToggle`
 - ✅ Optional keymap mapping via `setup` call
@@ -31,27 +33,35 @@ export OPENAI_API_KEY=your_api_key
 return {
   'johnseth97/codex.nvim',
   lazy = true,
+  cmd = { 'Codex', 'CodexToggle' }, -- Optional: Load only on command execution
   keys = {
     {
-      '<leader>cc',
+      '<leader>cc', -- Change this to your preferred keybinding
       function() require('codex').toggle() end,
       desc = 'Toggle Codex popup',
     },
   },
   opts = {
-    keymaps     = {},    -- disable internal mapping
-    border      = 'rounded', -- or 'double'
-    width       = 0.8,
-    height      = 0.8,
-    autoinstall = true,
+    keymaps     = {},         -- Disable internal default keymap (<leader>cc -> :CodexToggle)
+    border      = 'rounded',  -- Options: 'single', 'double', or 'rounded'
+    width       = 0.8,        -- Width of the floating window (0.0 to 1.0)
+    height      = 0.8,        -- Height of the floating window (0.0 to 1.0)
+    model       = nil,        -- Optional: pass a string to use a specific model (e.g., 'o3-mini')
+    autoinstall = true,       -- Automatically install the Codex CLI if not found
   },
-}
-```
+}```
 
 ### Usage:
 - Call `:Codex` (or `:CodexToggle`) to open or close the Codex popup.
 -- Map your own keybindings via the `keymaps.toggle` setting.
 - Add the following code to show backgrounded Codex window in lualine:
+
 ```lua
 require('codex').status() -- drop in to your lualine sections
 ```
+
+### Configuration:
+- All plugin configurations can be seen in the `opts` table of the plugin setup, as shown in the installation section.
+
+- **For deeper customization, please refer to the [Codex CLI documentation](https://github.com/openai/codex?tab=readme-ov-file#full-configuration-example) full configuration example. These features change quickly as Codex CLI is in active beta development.*
+
