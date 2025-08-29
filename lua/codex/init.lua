@@ -13,8 +13,13 @@ local config = {
   width = 0.8,
   height = 0.8,
   cmd = 'codex',
-  model = nil, -- Default to the latest model
+  model = nil,  -- Default to the latest model
   autoinstall = true,
+  winblend = 0, -- Transparency (0-100). Default: no blend.
+  -- Window-local highlight mapping.
+  -- Example to match normal buffer background:
+  -- 'Normal:Normal,NormalFloat:Normal,TermNormal:Normal,TermNormalNC:Normal,FloatBorder:FloatBorder'
+  winhl = 'Normal:Normal,NormalNC:NormalNC',
 }
 
 function M.setup(user_config)
@@ -84,6 +89,25 @@ local function open_window()
     style = 'minimal',
     border = border,
   })
+
+  vim.api.nvim_win_set_option(state.win, 'winblend', config.winblend)
+  if type(config.winhl) == 'string' and #config.winhl > 0 then
+    vim.api.nvim_win_set_option(state.win, 'winhl', config.winhl)
+  end
+end
+
+local function enter_terminal_insert()
+  -- Ensure the float starts in terminal-insert mode when visible
+  vim.schedule(function()
+    if state.win and vim.api.nvim_win_is_valid(state.win) and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
+      local bt = vim.api.nvim_buf_get_option(state.buf, 'buftype')
+      if bt == 'terminal' then
+        -- Focus the window and enter insert (terminal) mode
+        vim.api.nvim_set_current_win(state.win)
+        vim.cmd 'startinsert'
+      end
+    end
+  end)
 end
 
 function M.open()
@@ -98,7 +122,8 @@ function M.open()
 
     if config.keymaps.quit then
       local quit_cmd = [[<cmd>lua require('codex').close()<CR>]]
-      vim.api.nvim_buf_set_keymap(buf, 't', config.keymaps.quit, [[<C-\><C-n>]] .. quit_cmd, { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(buf, 't', config.keymaps.quit, [[<C-\><C-n>]] .. quit_cmd,
+        { noremap = true, silent = true })
       vim.api.nvim_buf_set_keymap(buf, 'n', config.keymaps.quit, quit_cmd, { noremap = true, silent = true })
     end
 
@@ -110,7 +135,8 @@ function M.open()
     return
   end
 
-  local check_cmd = type(config.cmd) == 'string' and not config.cmd:find '%s' and config.cmd or (type(config.cmd) == 'table' and config.cmd[1]) or nil
+  local check_cmd = type(config.cmd) == 'string' and not config.cmd:find '%s' and config.cmd or
+      (type(config.cmd) == 'table' and config.cmd[1]) or nil
 
   if check_cmd and vim.fn.executable(check_cmd) == 0 then
     if config.autoinstall then
@@ -159,6 +185,7 @@ function M.open()
   end
 
   open_window()
+  enter_terminal_insert()
 
   if not state.job then
     local cmd_args = type(config.cmd) == 'string' and { config.cmd } or vim.deepcopy(config.cmd)
@@ -173,6 +200,7 @@ function M.open()
         state.job = nil
       end,
     })
+    enter_terminal_insert()
   end
 end
 

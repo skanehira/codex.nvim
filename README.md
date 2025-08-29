@@ -66,3 +66,15 @@ require('codex').status() -- drop in to your lualine sections
 
 - **For deeper customization, please refer to the [Codex CLI documentation](https://github.com/openai/codex?tab=readme-ov-file#full-configuration-example) full configuration example. These features change quickly as Codex CLI is in active beta development.*
 
+#### Float Window Appearance
+- Defaults aim to match normal buffers:
+  - `winblend = 0`
+  - `winhl = 'Normal:Normal,NormalFloat:Normal,NormalNC:NormalNC'`
+- You can override in setup, e.g. subtle blend and border keep:
+
+```lua
+require('codex').setup({
+  winblend = 10,
+  winhl = 'Normal:Normal,NormalFloat:Normal,NormalNC:NormalNC,FloatBorder:FloatBorder',
+})
+```
