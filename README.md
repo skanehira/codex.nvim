@@ -12,7 +12,7 @@
 
 ### Installation:
 
-- Install the `codex` CLI via npm, or mark autoinstall as true in the config function
+- Install the `codex` CLI via npm:
 
 ```bash
 npm install -g @openai/codex
@@ -48,7 +48,6 @@ return {
     width       = 0.8,        -- Width of the floating window (0.0 to 1.0)
     height      = 0.8,        -- Height of the floating window (0.0 to 1.0)
     model       = nil,        -- Optional: pass a string to use a specific model (e.g., 'o3-mini')
-    autoinstall = true,       -- Automatically install the Codex CLI if not found
   },
 }```
 

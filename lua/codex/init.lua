@@ -1,5 +1,4 @@
 local vim = vim
-local installer = require 'codex.installer'
 local state = require 'codex.state'
 
 local M = {}
@@ -14,7 +13,6 @@ local config = {
   height = 0.8,
   cmd = 'codex',
   model = nil,  -- Default to the latest model
-  autoinstall = true,
   winblend = 0, -- Transparency (0-100). Default: no blend.
   -- Window-local highlight mapping.
   -- Example to match normal buffer background:
@@ -139,41 +137,17 @@ function M.open()
       (type(config.cmd) == 'table' and config.cmd[1]) or nil
 
   if check_cmd and vim.fn.executable(check_cmd) == 0 then
-    if config.autoinstall then
-      installer.prompt_autoinstall(function(success)
-        if success then
-          M.open() -- Try again after installing
-        else
-          -- Show failure message *after* buffer is created
-          if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
-            state.buf = create_clean_buf()
-          end
-          vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {
-            'Autoinstall cancelled or failed.',
-            '',
-            'You can install manually with:',
-            '  npm install -g @openai/codex',
-          })
-          open_window()
-        end
-      end)
-      return
-    else
-      -- Show fallback message
-      if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
-        state.buf = vim.api.nvim_create_buf(false, false)
-      end
-      vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {
-        'Codex CLI not found, autoinstall disabled.',
-        '',
-        'Install with:',
-        '  npm install -g @openai/codex',
-        '',
-        'Or enable autoinstall in setup: require("codex").setup{ autoinstall = true }',
-      })
-      open_window()
-      return
+    if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
+      state.buf = create_clean_buf()
     end
+    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {
+      'Codex CLI not found.',
+      '',
+      'Install with:',
+      '  npm install -g @openai/codex',
+    })
+    open_window()
+    return
   end
 
   local function is_buf_reusable(buf)

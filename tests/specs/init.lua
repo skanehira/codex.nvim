@@ -4,14 +4,15 @@
 local async = require 'plenary.async.tests'
 
 describe('codex.nvim', function()
-  require('codex.installer').__test_ignore_path_check = true -- Skip path checks for tests
+  -- No installer integration; ensure module loads cleanly
 
   it('should load without errors', function()
     require 'codex'
   end)
 
-  it('should respond to basic command', function()
-    vim.cmd 'CodexHello'
-    -- Add assertion if it triggers some output or state change
+  it('should expose commands', function()
+    require('codex').setup{}
+    local cmds = vim.api.nvim_get_commands{}
+    assert(cmds['Codex'] and cmds['CodexToggle'], 'Codex commands missing')
   end)
 end)
