@@ -32,7 +32,7 @@ describe('codex.nvim', function()
 
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_win_get_buf(win)
-    local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
+    local ft = vim.api.nvim_get_option_value('filetype', { buf = buf })
     eq(ft, 'codex')
 
     require('codex').close()
@@ -48,7 +48,7 @@ describe('codex.nvim', function()
     assert(vim.api.nvim_win_is_valid(win1), 'Codex window should be open')
 
     -- Optional: manually mark it clean
-    vim.api.nvim_buf_set_option(buf, 'modified', false)
+    vim.api.nvim_set_option_value('modified', false, { buf = buf })
 
     require('codex').toggle()
 

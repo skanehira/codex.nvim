@@ -88,9 +88,9 @@ local function open_window()
     border = border,
   })
 
-  vim.api.nvim_win_set_option(state.win, 'winblend', config.winblend)
+  vim.api.nvim_set_option_value('winblend', config.winblend, { win = state.win })
   if type(config.winhl) == 'string' and #config.winhl > 0 then
-    vim.api.nvim_win_set_option(state.win, 'winhl', config.winhl)
+    vim.api.nvim_set_option_value('winhl', config.winhl, { win = state.win })
   end
 end
 
@@ -98,7 +98,7 @@ local function enter_terminal_insert()
   -- Ensure the float starts in terminal-insert mode when visible
   vim.schedule(function()
     if state.win and vim.api.nvim_win_is_valid(state.win) and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-      local bt = vim.api.nvim_buf_get_option(state.buf, 'buftype')
+      local bt = vim.api.nvim_get_option_value('buftype', { buf = state.buf })
       if bt == 'terminal' then
         -- Focus the window and enter insert (terminal) mode
         vim.api.nvim_set_current_win(state.win)
@@ -112,9 +112,9 @@ function M.open()
   local function create_clean_buf()
     local buf = vim.api.nvim_create_buf(false, false)
 
-    vim.api.nvim_buf_set_option(buf, 'bufhidden', 'hide')
-    vim.api.nvim_buf_set_option(buf, 'swapfile', false)
-    vim.api.nvim_buf_set_option(buf, 'filetype', 'codex')
+    vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = buf })
+    vim.api.nvim_set_option_value('swapfile', false, { buf = buf })
+    vim.api.nvim_set_option_value('filetype', 'codex', { buf = buf })
 
     -- Apply configured quit keybinding
 
