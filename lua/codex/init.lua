@@ -11,7 +11,6 @@ local config = {
   border = 'single',
   width = 0.8,
   height = 0.8,
-  cmd = 'codex',
   model = nil,  -- Default to the latest model
   winblend = 0, -- Transparency (0-100). Default: no blend.
   -- Window-local highlight mapping.
@@ -30,6 +29,10 @@ function M.setup(user_config)
   vim.api.nvim_create_user_command('CodexToggle', function()
     M.toggle()
   end, { desc = 'Toggle Codex popup (alias)' })
+
+  vim.api.nvim_create_user_command('CodexResume', function()
+    M.resume()
+  end, { desc = 'Resume Codex session' })
 
   if config.keymaps.toggle then
     vim.api.nvim_set_keymap('n', config.keymaps.toggle, '<cmd>CodexToggle<CR>', { noremap = true, silent = true })
@@ -108,35 +111,36 @@ local function enter_terminal_insert()
   end)
 end
 
-function M.open()
-  local function create_clean_buf()
-    local buf = vim.api.nvim_create_buf(false, false)
+local function create_clean_buf()
+  local buf = vim.api.nvim_create_buf(false, false)
 
-    vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = buf })
-    vim.api.nvim_set_option_value('swapfile', false, { buf = buf })
-    vim.api.nvim_set_option_value('filetype', 'codex', { buf = buf })
+  vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = buf })
+  vim.api.nvim_set_option_value('swapfile', false, { buf = buf })
+  vim.api.nvim_set_option_value('filetype', 'codex', { buf = buf })
 
-    -- Apply configured quit keybinding
+  -- Apply configured quit keybinding
 
-    if config.keymaps.quit then
-      local quit_cmd = [[<cmd>lua require('codex').close()<CR>]]
-      vim.api.nvim_buf_set_keymap(buf, 't', config.keymaps.quit, [[<C-\><C-n>]] .. quit_cmd,
-        { noremap = true, silent = true })
-      vim.api.nvim_buf_set_keymap(buf, 'n', config.keymaps.quit, quit_cmd, { noremap = true, silent = true })
-    end
-
-    return buf
+  if config.keymaps.quit then
+    local quit_cmd = [[<cmd>lua require('codex').close()<CR>]]
+    vim.api.nvim_buf_set_keymap(buf, 't', config.keymaps.quit, [[<C-\><C-n>]] .. quit_cmd,
+      { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 'n', config.keymaps.quit, quit_cmd, { noremap = true, silent = true })
   end
 
+  return buf
+end
+
+local function is_buf_reusable(buf)
+  return type(buf) == 'number' and vim.api.nvim_buf_is_valid(buf)
+end
+
+local function open_codex_with_command(cmd_args)
   if state.win and vim.api.nvim_win_is_valid(state.win) then
     vim.api.nvim_set_current_win(state.win)
     return
   end
 
-  local check_cmd = type(config.cmd) == 'string' and not config.cmd:find '%s' and config.cmd or
-      (type(config.cmd) == 'table' and config.cmd[1]) or nil
-
-  if check_cmd and vim.fn.executable(check_cmd) == 0 then
+  if vim.fn.executable('codex') == 0 then
     if not state.buf or not vim.api.nvim_buf_is_valid(state.buf) then
       state.buf = create_clean_buf()
     end
@@ -150,10 +154,6 @@ function M.open()
     return
   end
 
-  local function is_buf_reusable(buf)
-    return type(buf) == 'number' and vim.api.nvim_buf_is_valid(buf)
-  end
-
   if not is_buf_reusable(state.buf) then
     state.buf = create_clean_buf()
   end
@@ -162,7 +162,6 @@ function M.open()
   enter_terminal_insert()
 
   if not state.job then
-    local cmd_args = type(config.cmd) == 'string' and { config.cmd } or vim.deepcopy(config.cmd)
     if config.model then
       table.insert(cmd_args, '-m')
       table.insert(cmd_args, config.model)
@@ -178,6 +177,10 @@ function M.open()
   end
 end
 
+function M.open()
+  open_codex_with_command({ 'codex' })
+end
+
 function M.close()
   if state.win and vim.api.nvim_win_is_valid(state.win) then
     vim.api.nvim_win_close(state.win, true)
@@ -191,6 +194,10 @@ function M.toggle()
   else
     M.open()
   end
+end
+
+function M.resume()
+  open_codex_with_command({ 'codex', 'resume' })
 end
 
 function M.statusline()
