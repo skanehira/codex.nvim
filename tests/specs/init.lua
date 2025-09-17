@@ -13,6 +13,6 @@ describe('codex.nvim', function()
   it('should expose commands', function()
     require('codex').setup{}
     local cmds = vim.api.nvim_get_commands{}
-    assert(cmds['Codex'] and cmds['CodexToggle'], 'Codex commands missing')
+    assert(cmds['Codex'] and cmds['CodexResume'], 'Codex commands missing')
   end)
 end)

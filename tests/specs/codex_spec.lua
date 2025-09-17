@@ -23,7 +23,7 @@ describe('codex.nvim', function()
 
     local cmds = vim.api.nvim_get_commands {}
     assert(cmds['Codex'], 'Codex command not found')
-    assert(cmds['CodexToggle'], 'CodexToggle command not found')
+    assert(cmds['CodexResume'], 'CodexResume command not found')
   end)
 
   it('opens a floating terminal window', function()

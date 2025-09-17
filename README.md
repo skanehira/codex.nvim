@@ -5,7 +5,7 @@
 > Latest version: ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/johnseth97/codex.nvim?sort=semver)
 
 ### Features:
-- ✅ Toggle Codex floating window with `:CodexToggle`
+- ✅ Toggle Codex floating window with `:Codex`
 - ✅ Optional keymap mapping via `setup` call
 - ✅ Background running when window hidden
 - ✅ Statusline integration via `require('codex').status()`
@@ -31,19 +31,24 @@ export OPENAI_API_KEY=your_api_key
 return {
   'johnseth97/codex.nvim',
   lazy = true,
-  cmd = { 'Codex', 'CodexToggle' }, -- Optional: Load only on command execution
+  cmd = { 'Codex', 'CodexResume' }, -- Optional: Load only on command execution
   keys = {
     {
       '<leader>cc', -- Change this to your preferred keybinding
       function() require('codex').toggle() end,
       desc = 'Toggle Codex popup',
     },
+    {
+      '<leader>cr', -- Change this to your preferred keybinding
+      function() require('codex').resume() end,
+      desc = 'Resume Codex',
+    },
   },
   opts = {
     keymaps     = {
       toggle = nil, -- Keybind to toggle Codex window (Disabled by default, watch out for conflicts)
       quit = '<C-q>', -- Keybind to close the Codex window (default: Ctrl + q)
-    },         -- Disable internal default keymap (<leader>cc -> :CodexToggle)
+    },         -- Disable internal default keymap (<leader>cc -> :Codex)
     border      = 'rounded',  -- Options: 'single', 'double', or 'rounded'
     width       = 0.8,        -- Width of the floating window (0.0 to 1.0)
     height      = 0.8,        -- Height of the floating window (0.0 to 1.0)
@@ -52,7 +57,7 @@ return {
 }```
 
 ### Usage:
-- Call `:Codex` (or `:CodexToggle`) to open or close the Codex popup.
+- Call `:Codex` to open or close the Codex popup.
 -- Map your own keybindings via the `keymaps.toggle` setting.
 - Add the following code to show backgrounded Codex window in lualine:
 

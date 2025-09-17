@@ -26,16 +26,12 @@ function M.setup(user_config)
     M.toggle()
   end, { desc = 'Toggle Codex popup' })
 
-  vim.api.nvim_create_user_command('CodexToggle', function()
-    M.toggle()
-  end, { desc = 'Toggle Codex popup (alias)' })
-
   vim.api.nvim_create_user_command('CodexResume', function()
     M.resume()
   end, { desc = 'Resume Codex session' })
 
   if config.keymaps.toggle then
-    vim.api.nvim_set_keymap('n', config.keymaps.toggle, '<cmd>CodexToggle<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', config.keymaps.toggle, '<cmd>Codex<CR>', { noremap = true, silent = true })
   end
 end
 
