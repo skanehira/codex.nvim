@@ -123,6 +123,10 @@ local function create_clean_buf()
     vim.api.nvim_buf_set_keymap(buf, 'n', config.keymaps.quit, quit_cmd, { noremap = true, silent = true })
   end
 
+  -- Apply next/prev mappings
+  vim.api.nvim_buf_set_keymap(buf, 't', '<C-n>', '<Down>', { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(buf, 't', '<C-p>', '<Up>', { noremap = true, silent = true })
+
   return buf
 end
 
